@@ -1,0 +1,75 @@
+<html ng-app="WorkoutLog">
+<head>
+	<meta charset="UTF-8">
+	<title>Log</title>
+	<link rel="stylesheet" type="text/css" href="lib/bootstrap/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="css/styles.css">
+	<script src="lib/angular/angular.min.js"></script>
+	<script src="lib/angular/angular-messages.min.js"></script>
+	<script src="js/app.js"></script>
+	<script src="js/controllers/WorkoutLogCtrl.js"></script>
+</head>
+<body ng-controller="WorkoutLogCtrl">
+	<div class="jumbotron">
+		<h3>{{app}}</h3>
+		<div class="divContorno"> 
+			<div class="Backsubtitulo">
+				<h4>Insert an item</h4>
+			</div>
+			<form name="atividadeForm">
+				<input class="form" type="text" ng-model="atividade.tempo" maxlength="2" name="tempo" placeholder="Meu tempo" ng-required="true" ng-minlength="1" ng-maxlength="2" ng-pattern="/^\d{1,2}$/"/>
+				<select class="form tipoEsporte" ng-model="atividade.tipoesporte" ng-options="tipoesporte.nomeEsporte for tipoesporte in tipoesportes | orderBy:'nomeEsporte'">
+					<option value="">Selecione</option>
+				</select>
+				<input class="form data" type="date" ng-model="atividade.data" name="data" placeholder="     /     /" ng-required="true" />
+				<button class="btn btn-primary" ng-click="adicionaratividade(atividade)" ng-disabled="atividadeForm.$invalid">Add</button>
+			</form>
+			<div ng-show="atividadeForm.tempo.$dirty" ng-messages="atividadeForm.tempo.$error">
+				<div ng-message="required" class="alert alert-danger">
+					Por favor, preencha o campo tempo!
+				</div>
+				<div ng-message="minlength" class="alert alert-danger">
+					O campo tempo deve ter no mínimo 1 hora.
+				</div>
+				<div ng-message="maxlength" class="alert alert-danger">
+					O campo tempo deve ter no máximo 99 horas.
+				</div>
+			</div>
+			<div ng-show="atividadeForm.data.$error.required && atividadeForm.data.$dirty" class="alert alert-danger">
+				Por favor, preencha o campo data!
+			</div>
+		</div>
+		<hr/>
+		<!-- Campo para realizar a busca de informação da Tabela -->
+		<div class="divContorno div_pqs"> 
+			<div class="Backsubtitulo pesquisa">
+				<h4>Pesquisar</h4>
+			</div>
+			<input class="form frm_pqs" type="text" name="texto" ng-model="criterioDeBusca" ng-keyup="pesquisa()" placeholder="O que você está buscando?"/>
+		</div>
+		<hr/>
+		<table ng-show="atividades.length > 0" class="table table-striped" style="border: 2px #333 solid;">
+			<thead>
+				<tr>
+					<th><a href="" ng-click="ordenarPor('tempo')"><img src="img/setas.png"> Tempo</a></th>
+					<th><a href="" ng-click="ordenarPor('tipoesporte.nomeEsporte')"><img src="img/setas.png"> Tipo</th>
+					<th><a href="" ng-click="ordenarPor('data')"><img src="img/setas.png"> Data</a></th>
+					<th class="alig_center">
+						<button class="btn btn-danger btn-block" ng-click="apagaratividades(atividades)" ng-disabled="!isatividadeSelecionado(atividades)">Apagar</button>
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-class="{'selecionado': atividade.selecionado}" ng-repeat="atividade in (itensFiltrados = (atividades | filter:criterioDeBusca | orderBy:criterioDeOrdenacao:direcaoDaOrdenacao))">
+					<td>{{atividade.tempo + 'h'}}</td>
+					<td>{{atividade.tipoesporte.nomeEsporte}}</td>
+					<td>{{atividade.data | date:'dd/MM/yyyy'}}</td>
+					<td style="text-align: center;"><input type="checkbox" ng-model="atividade.selecionado"/></td>
+				</tr>
+			</tbody>
+		</table>
+		<hr/>
+         <h3>{{total + " hours of exercises"}}</h3>
+	</div>
+</body>
+</html>
